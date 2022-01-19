@@ -28,8 +28,8 @@
 				</MakeCommands>
 			</Target>
 			<Target title="ProjetoAED2">
-				<Option output="C:/Users/maysa/ProjetoAED2/cmake-build-debug/ProjetoAED2.exe" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir="C:/Users/maysa/ProjetoAED2/cmake-build-debug"/>
+				<Option output="C:/Users/maysa/ProjetoAED2/dataset/ProjetoAED2.exe" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="C:/Users/maysa/ProjetoAED2/dataset"/>
 				<Option object_output="./"/>
 				<Option type="1"/>
 				<Option compiler="gcc"/>
@@ -49,8 +49,8 @@
 				</MakeCommands>
 			</Target>
 			<Target title="ProjetoAED2/fast">
-				<Option output="C:/Users/maysa/ProjetoAED2/cmake-build-debug/ProjetoAED2.exe" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir="C:/Users/maysa/ProjetoAED2/cmake-build-debug"/>
+				<Option output="C:/Users/maysa/ProjetoAED2/dataset/ProjetoAED2.exe" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="C:/Users/maysa/ProjetoAED2/dataset"/>
 				<Option object_output="./"/>
 				<Option type="1"/>
 				<Option compiler="gcc"/>

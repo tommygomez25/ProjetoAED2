@@ -1,8 +1,8 @@
 file(REMOVE_RECURSE
+  "../dataset/ProjetoAED2.exe"
+  "../dataset/ProjetoAED2.exe.manifest"
+  "../dataset/ProjetoAED2.pdb"
   "CMakeFiles/ProjetoAED2.dir/main.cpp.obj"
-  "ProjetoAED2.exe"
-  "ProjetoAED2.exe.manifest"
-  "ProjetoAED2.pdb"
   "libProjetoAED2.dll.a"
 )
 
