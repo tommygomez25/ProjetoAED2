@@ -4,6 +4,7 @@
 #include <vector>
 #include <list>
 #include <iostream>
+#include <queue>
 
 using namespace std;
 
@@ -25,11 +26,6 @@ public:
         string zone;
         float latitude;
         float longitude;
-
-
-        void setStop(string stop){
-            this->stop = stop;
-        }
     };
 
     int n;              // Graph size (vertices are numbered from 1 to n)
@@ -44,14 +40,13 @@ public:
     Graph(int nodes, bool dir = false);
 
     // Add edge from source to destination with a certain weight
-    void addEdge(int src, int dest, int weight = 1);
+    void addEdge(int src, int dest, string line,int weight = 1);
 
     // ----- Functions to implement in this class -----
     int dijkstra_distance(int a, int b);
     list<int> dijkstra_path(int a, int b);
     vector<Node> getNodes(){return nodes;}
-
-
+    void bfs(int v, int b);
 };
 
 

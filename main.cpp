@@ -8,9 +8,32 @@
 #include <map>
 
 using namespace std;
-//namespace fs = std::filesystem;
 
-vector<string> filesVector();
+struct Line{
+    string code;
+    string name;
+public:
+    Line(const string &code, const string &name){
+        this->code = code;
+        this->name = name;
+    }
+};
+
+struct Stop{
+    string code;
+    string name;
+    string zone;
+    float latitude;
+    float longitude;
+public:
+    Stop(const string &code, const string &name,const string &zone,const float &latitude, const float &longitude){
+        this->code = code;
+        this->name = name;
+        this->zone = zone;
+        this->latitude = latitude;
+        this-> longitude = longitude;
+    }
+};
 
 static double haversine(double lat1, double lon1,
                         double lat2, double lon2)
@@ -35,6 +58,22 @@ static double haversine(double lat1, double lon1,
         return rad * c;
     }
 
+vector<string> filesVector(){
+    vector<string> v1;
+    DIR *pDIR;
+    struct dirent *entry;
+    if( pDIR=opendir("C:\\Users\\jffma\\CLionProjects\\ProjetoAED2\\dataset") ){
+        while(entry = readdir(pDIR)){
+            if( strcmp(entry->d_name, ".") != 0 && strcmp(entry->d_name, "..") != 0 ){
+                v1.push_back(entry->d_name);
+            }
+        }
+        closedir(pDIR);
+    }
+
+    return v1;
+}
+
 vector<vector<string>> readFile(string filename){
     fstream file;
     file.open(filename);
@@ -53,7 +92,7 @@ vector<vector<string>> readFile(string filename){
     return content;
 }
 
-vector<string> readFileTony(string filename){
+vector<string> readFileTony(const string &filename){
     ifstream file;
     file.open(filename);
     string line, value;
@@ -66,6 +105,44 @@ vector<string> readFileTony(string filename){
         index++;
     }
     return stops;
+}
+
+vector<Line> readLinesTony(){
+    vector<Line> lines;
+    ifstream file;
+    file.open("lines.csv");
+    string lineCode, lineName, line;
+    getline(file,line);
+
+    istringstream iss;
+
+    while(getline(file,line,',')){
+        istringstream iss(line);
+        iss >> lineCode;
+        iss >> lineName;
+        lines.push_back(Line(lineCode,lineName));
+    }
+    return lines;
+}
+
+vector<Stop> readStops(){
+    vector<Stop> stops;
+    ifstream file;
+    file.open("stops.csv");
+    string stopCode, stopName, stopZone, stopLatitude, stopLongitude, line;
+    getline(file,line);
+
+    while(getline(file,line)){
+        istringstream iss(line);
+        iss >> stopCode;
+        iss >> stopName;
+        iss >> stopZone;
+        iss >> stopLatitude;
+        iss >> stopLongitude;
+        stops.push_back(Stop(stopCode,stopName,stopZone,stof(stopLatitude),stof(stopLongitude)));
+    }
+    return stops;
+
 }
 
 int getIndexStops(string stop, map<string,int> stops){
@@ -81,10 +158,23 @@ int getIndexStops(string stop, map<string,int> stops){
 int main() {
     vector<string> v1 = filesVector();
     vector<vector<string>> fred;
+    vector<string> codLines;
+
+    //--------//------//
+
+
     for (int i = 0; i< v1.size(); i++){
         if(v1[i] != "stops.csv" && v1[i] != "lines.csv" && v1[i] != "ProjetoAED2.exe"){
-            if(!readFileTony(v1[i]).empty())
-                fred.push_back(readFileTony(v1[i]));}
+            if(!readFileTony(v1[i]).empty()){
+                fred.push_back(readFileTony(v1[i]));
+                stringstream cod(v1[i]);
+                string code;
+                getline(cod, code, '_');
+                getline(cod, code, '_');
+                codLines.push_back(code);
+            }
+
+        }
     }
     map<string,int> stops;
     vector<vector<string>> content = readFile("stops.csv");
@@ -105,25 +195,12 @@ int main() {
     for(int i = 0; i < fred.size(); i++){
         for(int j = 0; j < fred[i].size()-1; j++){
             int index = getIndexStops(fred[i][j], stops);
-            graph.addEdge(index, getIndexStops(fred[i][j+1],stops));
+            graph.addEdge(index, getIndexStops(fred[i][j+1],stops), codLines[i]);
         }
     }
 
     cout << haversine(graph.nodes[2174].latitude, graph.nodes[2174].longitude, graph.nodes[2069].latitude, graph.nodes[2069].longitude) << " KM";
-
+    graph.bfs(2000, 1283);
 }
-vector<string> filesVector(){
-    vector<string> v1;
-    DIR *pDIR;
-    struct dirent *entry;
-    if( pDIR=opendir("C:\\Users\\jffma\\CLionProjects\\ProjetoAED2\\dataset") ){
-        while(entry = readdir(pDIR)){
-            if( strcmp(entry->d_name, ".") != 0 && strcmp(entry->d_name, "..") != 0 ){
-                v1.push_back(entry->d_name);
-            }
-        }
-        closedir(pDIR);
-    }
 
-    return v1;
-}
+
