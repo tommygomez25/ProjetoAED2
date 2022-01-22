@@ -75,5 +75,11 @@ int main(){
             graph1.addEdge(stopIndexParent,stopIndexChild,lineCode,distance);
         }
     }
+    //cout << graph1.bfs(1347,557);
+    //cout << graph1.bfs(1217,1125) << endl;
+    //cout << graph1.bfs(1340,1067) << endl;
+    //cout << graph1.bfs(2175,420) << endl;
+    cout << graph1.bfs(1359,1088) << endl; // no 603 sao 29 paragens , no 604 sao 14
+    //cout << graph1.bfs(1087,1172) << endl;
     return EXIT_SUCCESS;
 }

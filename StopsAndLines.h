@@ -78,4 +78,5 @@ Stop closestStop(double lat, double lon,const vector<Stop> &stops){
 }
 
 
+
 #endif //PROJETOAED2_STOPSANDLINES_H

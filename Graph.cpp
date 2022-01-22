@@ -1,6 +1,7 @@
 #include "graph.h"
 #include <climits>
 #include <tuple>
+#include <map>
 
 // Constructor: nr nodes and direction (default: undirected)
 graph::graph(int num, bool dir) : n(num), hasDir(dir), nodes(num + 1) {
@@ -15,38 +16,43 @@ void graph::addEdge(int src, int dest,string line, double weight) {
 }
 
 int graph::bfs(int v, int b) {
-
+    string linha_a_usar;
+    multimap<string,string> stops;
     for (int v=1; v<=n; v++) nodes[v].visited = false;
     queue<int> q; // queue of unvisited nodes
     q.push(v);
-    nodes[v]. visited = true;
-    int i = 0;
-    cout << endl << "Indice paragem inicial: "<<v ;
-    i++;
-    bool arrived = false;
-    while (q.front() != b) { // while there are still unvisited nodes
+    nodes[v].dist = 0;
+    nodes[v].visited = true;
+    while (!q.empty()) { // while there are still unvisited nodes
         int u = q.front(); q.pop();
-        // show node order
+        if ( u == b){
+            //return nodes[b].dist;
+            break;
+        }
+
         for (auto e : nodes[u].adj) {
-            cout <<endl << "Índice do node: "<<e.dest << "  Distancia (em paragens): " << i << "  Linha a usar: "<< e.line ;
             int w = e.dest;
-            if(w == b){
-                arrived = true;
-                break;
+            if (w == b) {
+                linha_a_usar = e.line;
             }
-
+            //cout << e.line << " - " << nodes[w].stop << endl;
+            stops.insert(make_pair(e.line,nodes[w].stop));
             if (!nodes[w].visited) {
-
                 q.push(w);
                 nodes[w].visited = true;
+                nodes[w].dist = nodes[u].dist + 1;
             }
         }
-        if(arrived)
-            break;
-        i++;
-
     }
-    return i;
+
+    cout << "A linha que deve usar : " << linha_a_usar << endl;
+    cout << "As paragens sao as seguintes: " ;
+    for (auto const& stop : stops){
+        if (stop.first == linha_a_usar ){
+            cout << stop.second << " - " ;
+        }
+    }
+    return -1;
 }
 
 
