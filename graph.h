@@ -45,7 +45,7 @@ public:
 
     // ----- Functions to implement in this class -----
     int dijkstra_distance(int a, int b);
-    list<int> dijkstra_path(int a, int b);
+    list<string> dijkstra_path(int a, int b);
     vector<Node> getNodes(){return nodes;}
     int bfs(int v, int b);
 };

@@ -56,10 +56,10 @@ static double haversine(double lat1, double lon1,
 }
 
 
-int getIndexStops(string stop, map<string,int> stops){
+int getIndexStops(string stop, map<int,string> stops){
     for(auto s : stops){
-        if(stop == s.first)
-            return s.second;
+        if(stop == s.second)
+            return s.first;
     }
     return -1;
 }

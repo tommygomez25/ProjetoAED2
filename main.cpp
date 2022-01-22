@@ -17,7 +17,7 @@ int main(){
     graph graph1(2487,true);
     string line;
 
-    map<string,int> stopsIndex;
+    map<int,string> stopsIndex;
 
     // adicionar os nós ao graph , cada nó representa uma paragem
     for(unsigned int i = 1; i < graph1.getNodes().size(); i++){
@@ -26,7 +26,7 @@ int main(){
         graph1.nodes[i].zone = stops[i-1].zone;
         graph1.nodes[i].latitude = stops[i-1].latitude;
         graph1.nodes[i].longitude = stops[i-1].longitude;
-        stopsIndex.insert(make_pair(stops[i-1].code,i));
+        stopsIndex.insert(make_pair(i,stops[i-1].code));
     }
 
 
@@ -78,8 +78,15 @@ int main(){
     //cout << graph1.bfs(1347,557);
     //cout << graph1.bfs(1217,1125) << endl;
     //cout << graph1.bfs(1340,1067) << endl;
+    list<string> path = graph1.dijkstra_path(1359,1067);
+    //list<string> path = graph1.dijkstra_path(1359,1088);
+    for (auto it = path.begin(); it != path.end(); it++){
+        cout << *it << endl;
+    }
+    //cout << graph1.bfs(1340,1266) << endl;
+    cout << endl;
     //cout << graph1.bfs(2175,420) << endl;
-    cout << graph1.bfs(1359,1088) << endl; // no 603 sao 29 paragens , no 604 sao 14
+    //cout << graph1.bfs(1359,1088) << endl; // no 603 sao 29 paragens , no 604 sao 14
     //cout << graph1.bfs(1087,1172) << endl;
     return EXIT_SUCCESS;
 }
