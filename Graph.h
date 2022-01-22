@@ -5,7 +5,6 @@
 #include <list>
 #include <iostream>
 #include <queue>
-#include "minHeap.h"
 
 using namespace std;
 
@@ -33,7 +32,7 @@ public:
     bool hasDir;        // false: undirect; true: directed
      // The list of nodes being represented
 
-    void dijkstra(int s, int r);
+    void dijkstra(int s);
 
 
     vector<Node> nodes;
