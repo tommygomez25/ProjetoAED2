@@ -2,74 +2,79 @@
 #include <fstream>
 #include <sstream>
 #include <filesystem>
-#include<dirent.h>
-#include <vector>
+#include <dirent.h>
+#include <cmath>
 #include "Graph.h"
+#include <map>
+#include <set>
+#include "Files.h"
 
 using namespace std;
-//namespace fs = std::filesystem;
 
-vector<string> filesVector();
+int main(){
+    vector<Line> lines = readLinesTony();
+    vector<Stop> stops = readStops();
+    Graph graph1(2487,true);
+    string line;
 
-vector<vector<string>> readFile(string filename){
-    fstream file;
-    file.open(filename);
-    string line, value;
-    vector<string> row;
-    vector<vector<string>> content;
-    while(getline(file, line)){
-        stringstream str(line);
-        row.clear();
-        while(getline(str, value, ',')){
-            row.push_back(value);
+    map<string,int> stopsIndex;
+
+    // adicionar os nós ao graph , cada nó representa uma paragem
+    for(unsigned int i = 1; i < graph1.getNodes().size(); i++){
+        graph1.nodes[i].code = stops[i-1].code;
+        graph1.nodes[i].stop = stops[i-1].name;
+        graph1.nodes[i].zone = stops[i-1].zone;
+        graph1.nodes[i].latitude = stops[i-1].latitude;
+        graph1.nodes[i].longitude = stops[i-1].longitude;
+        stopsIndex.insert(make_pair(stops[i-1].code,i));
+    }
+
+
+    for (unsigned int i = 0 ; i < lines.size() ; i++){ // direção 0
+        ifstream file;
+        string lineCode = lines[i].code;
+        file.open("line_" + lineCode + "_" + "0.csv");
+        getline(file,line); // para ignorar a primeira linha
+        vector<string> lineCodes; // todos os códigos dos STOPS dessa linha
+
+        while (getline(file,line)){
+            lineCodes.push_back(line);
         }
-        content.push_back(row);
 
-    }
-    return content;
-}
-
-
-int main() {
-    vector<string> v1 = filesVector();
-    vector<vector<vector<string>>> fred;
-    for (int i = 0; i< v1.size(); i++){
-        fred.push_back(readFile(v1[i]));
-    }
-    vector<vector<string>> content = readFile("stops.csv");
-    Graph graph(2487, true);
-    int i = 0;
-    for(auto &node : graph.nodes){
-        node.code = content[i][0];
-        node.stop = content[i][1];
-        node.zone = content[i][2];
-        node.latitude = stof(content[i][3]);
-        node.longitude = stof(content[i][4]);
-        i++;
-    }
-    for(int i = 0; i < graph.nodes.size(); i++){
-        cout << graph.nodes[i].stop << endl;
-    }
-
-
-
-
-    /for (const auto & entry : fs::directory_iterator()){
-        cout << entry.path() << endl;
-    }
-    return 0;/
-}
-vector<string> filesVector(){
-    vector<string> v1;
-    DIR *pDIR;
-    struct dirent *entry;
-    if( pDIR=opendir("dataset") ){
-        while(entry = readdir(pDIR)){
-            if( strcmp(entry->d_name, ".") != 0 && strcmp(entry->d_name, "..") != 0 ){
-                v1.push_back(entry->d_name);
-            }
+        for (unsigned j = 0 ; j < lineCodes.size()-1; j++){
+            int stopIndexParent = getIndexStops(lineCodes[j], stopsIndex);
+            int stopIndexChild = getIndexStops(lineCodes[j + 1], stopsIndex);
+            double distance = haversine(stops[stopIndexParent].latitude,
+                                        stops[stopIndexParent].longitude,
+                                        stops[stopIndexChild].latitude,
+                                        stops[stopIndexChild].longitude);
+            graph1.addEdge(stopIndexParent,stopIndexChild,lineCode,distance);
         }
-        closedir(pDIR);
     }
-    return v1;
+
+    for (unsigned int i = 0 ; i < lines.size() ; i++){ // direção 1
+        ifstream file;
+        string lineCode = lines[i].code;
+        file.open("line_" + lineCode + "_" + "1.csv");
+        getline(file,line); // para ignorar a primeira linha
+        vector<string> lineCodes; // todos os códigos dos STOPS dessa linha
+
+
+        while (getline(file,line)){
+            lineCodes.push_back(line);
+        }
+        if (lineCodes.size() == 0) continue; // há linhas que não têm direção 1
+
+        for (unsigned j = 0 ; j < lineCodes.size()-1; j++){
+            int stopIndexParent = getIndexStops(lineCodes[j], stopsIndex);
+            int stopIndexChild = getIndexStops(lineCodes[j + 1], stopsIndex);
+            double distance = haversine(stops[stopIndexParent].latitude,
+                                        stops[stopIndexParent].longitude,
+                                        stops[stopIndexChild].latitude,
+                                        stops[stopIndexChild].longitude);
+            graph1.addEdge(stopIndexParent,stopIndexChild,lineCode,distance);
+        }
+    }
+    return EXIT_SUCCESS;
 }
+
