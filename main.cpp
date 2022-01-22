@@ -146,6 +146,7 @@ vector<Stop> readStops(){
 }
 
 int getIndexStops(string stop, map<string,int> stops){
+
     for(auto s : stops){
         if(stop == s.first)
             return s.second;

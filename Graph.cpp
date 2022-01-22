@@ -37,5 +37,10 @@ void Graph::bfs(int v, int b) {
     }
 }
 
+void Graph::dijkstra(int s) {
+    MinHeap<int,int> q(n,-1);
+}
+
+
 
 
