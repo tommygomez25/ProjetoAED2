@@ -9,7 +9,7 @@
 
 using namespace std;
 
-class Graph {
+class graph {
 public:
     struct Edge {
         int dest;   // Destination node
@@ -29,7 +29,7 @@ public:
         float longitude;
     };
 
-    int n;              // Graph size (vertices are numbered from 1 to n)
+    int n;              // graph size (vertices are numbered from 1 to n)
     bool hasDir;        // false: undirect; true: directed
      // The list of nodes being represented
 
@@ -38,7 +38,7 @@ public:
 
     vector<Node> nodes;
     // Constructor: nr nodes and direction (default: undirected)
-    Graph(int nodes, bool dir = false);
+    graph(int nodes, bool dir = false);
 
     // Add edge from source to destination with a certain weight
     void addEdge(int src, int dest, string line,double weight = 1);

@@ -4,7 +4,7 @@
 #include <filesystem>
 #include <dirent.h>
 #include <cmath>
-#include "Graph.h"
+#include "graph.h"
 #include <map>
 #include <set>
 
@@ -174,7 +174,7 @@ int main() {
 
     vector<Line> lines = readLinesTony();
     vector<Stop> stops = readStops();
-    Graph graph1(2487,true);
+    graph graph1(2487, true);
     map<string,int> stopsIndex;
 
     for(unsigned int i = 1; i < graph1.getNodes().size(); i++){
@@ -229,8 +229,8 @@ int main() {
     }
     map<string,int> stops;
     vector<vector<string>> content = readFile("stops.csv");
-    // Criação do Graph
-    Graph graph(2487, true);
+    // Criação do graph
+    graph graph(2487, true);
     int i = 1;
     for(int j = 1; j < graph.nodes.size(); j++){
         graph.nodes[j].code = content[i][0];
