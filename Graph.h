@@ -56,5 +56,3 @@ public:
 #endif //PROJETOAED2_GRAPH_H
 
 
-
-#endif //PROJETOAED2_GRAPH_H

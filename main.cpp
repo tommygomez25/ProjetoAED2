@@ -14,7 +14,7 @@ using namespace std;
 int main(){
     vector<Line> lines = readLinesTony();
     vector<Stop> stops = readStops();
-    Graph graph1(2487,true);
+    graph graph1(2487,true);
     string line;
 
     map<string,int> stopsIndex;
