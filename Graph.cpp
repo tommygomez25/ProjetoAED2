@@ -34,7 +34,7 @@ int graph::bfs(int v, int b) {
                 arrived = true;
                 break;
             }
-            
+
             if (!nodes[w].visited) {
 
                 q.push(w);
