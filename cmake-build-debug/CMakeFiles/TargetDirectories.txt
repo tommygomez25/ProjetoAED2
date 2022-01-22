@@ -1,3 +1,0 @@
-D:/MIEIC-LEIC/2_ano/AED/ProjetoAED2/cmake-build-debug/CMakeFiles/edit_cache.dir
-D:/MIEIC-LEIC/2_ano/AED/ProjetoAED2/cmake-build-debug/CMakeFiles/ProjetoAED2.dir
-D:/MIEIC-LEIC/2_ano/AED/ProjetoAED2/cmake-build-debug/CMakeFiles/rebuild_cache.dir
