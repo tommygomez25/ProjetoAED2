@@ -83,7 +83,7 @@ int graph::dijkstra_distance(int a, int b) {
 }
 
 list<int> graph::dijkstra_path(int a, int b) {
-    dijkstra(a);
+    dijkstra(a,b);
     list<int> path;
     if (nodes[b].dist == INT_MAX / 2) return path;
     path.push_back(b);
