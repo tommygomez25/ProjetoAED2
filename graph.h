@@ -19,7 +19,7 @@ public:
 
     struct Node {
         list<Edge> adj; // The list of outgoing edges (to adjacent nodes)
-        int dist;
+        double dist;
         int pred;
         bool visited;
         string stop; // The name of the stop
@@ -27,13 +27,14 @@ public:
         string zone;
         float latitude;
         float longitude;
+        string line;
     };
 
     int n;              // graph size (vertices are numbered from 1 to n)
     bool hasDir;        // false: undirect; true: directed
     // The list of nodes being represented
 
-    void dijkstra(int s, int r);
+    queue<string> dijkstra(int s, int r);
 
 
     vector<Node> nodes;
@@ -45,7 +46,7 @@ public:
 
     // ----- Functions to implement in this class -----
     int dijkstra_distance(int a, int b);
-    list<int> dijkstra_path(int a, int b);
+    list<tuple<string,string,string>> dijkstra_path(int a, int b);
     vector<Node> getNodes(){return nodes;}
     int bfs(int v, int b);
 };

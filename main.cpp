@@ -4,7 +4,7 @@
 #include <filesystem>
 #include <dirent.h>
 #include <cmath>
-#include "Graph.h"
+#include "graph.h"
 #include <map>
 #include <set>
 #include "Files.h"
@@ -44,10 +44,12 @@ int main(){
         for (unsigned j = 0 ; j < lineCodes.size()-1; j++){
             int stopIndexParent = getIndexStops(lineCodes[j], stopsIndex);
             int stopIndexChild = getIndexStops(lineCodes[j + 1], stopsIndex);
-            double distance = haversine(stops[stopIndexParent].latitude,
-                                        stops[stopIndexParent].longitude,
-                                        stops[stopIndexChild].latitude,
-                                        stops[stopIndexChild].longitude);
+            double distance = haversine(stops[stopIndexParent-1].latitude,
+                                        stops[stopIndexParent-1].longitude,
+                                        stops[stopIndexChild-1].latitude,
+                                        stops[stopIndexChild-1].longitude);
+            if(stops[stopIndexParent].name == "LUIS CAMÕES")
+                cout << endl <<stops[stopIndexParent-1].name << " - " << stops[stopIndexChild-1].name << "," << distance << endl;
             graph1.addEdge(stopIndexParent,stopIndexChild,lineCode,distance);
         }
     }
@@ -68,13 +70,29 @@ int main(){
         for (unsigned j = 0 ; j < lineCodes.size()-1; j++){
             int stopIndexParent = getIndexStops(lineCodes[j], stopsIndex);
             int stopIndexChild = getIndexStops(lineCodes[j + 1], stopsIndex);
-            double distance = haversine(stops[stopIndexParent].latitude,
-                                        stops[stopIndexParent].longitude,
-                                        stops[stopIndexChild].latitude,
-                                        stops[stopIndexChild].longitude);
+            double distance = haversine(stops[stopIndexParent-1].latitude,
+                                        stops[stopIndexParent-1].longitude,
+                                        stops[stopIndexChild-1].latitude,
+                                        stops[stopIndexChild-1].longitude);
+
+            if(stops[stopIndexParent-1].name == "LUIS CAMÕES"){
+                cout << stopIndexParent<< " - " << stopIndexChild;
+                cout << endl <<stops[stopIndexParent-1].name << " - " << stops[stopIndexChild-1].name << "," << distance << endl;
+            }
             graph1.addEdge(stopIndexParent,stopIndexChild,lineCode,distance);
         }
     }
+
+//    list<tuple<string,string,string>> path = graph1.dijkstra_path(1340,1067);
+    cout << graph1.bfs(1340,1067);
+
+    //list<tuple<string,string,string>> path = graph1.dijkstra_path(2177,913);
+
+/*    for(auto it = path.begin(); it != path.end(); it++){
+        cout << get<2>(*it)<< " - " <<get<0>(*it) << "(" << get<1>(*it) << ")" <<  " -> ";
+    }*/
+    //cout << haversine(graph1.nodes[1340].latitude, graph1.nodes[1340].longitude, graph1.nodes[1261].latitude, graph1.nodes[1261].longitude);
+
     return EXIT_SUCCESS;
 }
 

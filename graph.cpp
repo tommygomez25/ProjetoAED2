@@ -1,6 +1,7 @@
 #include "graph.h"
 #include <climits>
 #include <tuple>
+#include <map>
 
 // Constructor: nr nodes and direction (default: undirected)
 graph::graph(int num, bool dir) : n(num), hasDir(dir), nodes(num + 1) {
@@ -15,40 +16,45 @@ void graph::addEdge(int src, int dest,string line, double weight) {
 }
 
 int graph::bfs(int v, int b) {
-
+    list<int> distances;
+    int dist = -1;
+    string linha_a_usar;
+    multimap<string,string> stops;
     for (int v=1; v<=n; v++) nodes[v].visited = false;
     queue<int> q; // queue of unvisited nodes
     q.push(v);
-    nodes[v]. visited = true;
-    int i = 0;
-    cout << endl << "Indice paragem inicial: "<<v ;
-    i++;
-    bool arrived = false;
-    while (q.front() != b) { // while there are still unvisited nodes
+    nodes[v].dist = 0;
+    distances.push_back(nodes[v].dist);
+    nodes[v].visited = true;
+    while (!q.empty()) { // while there are still unvisited nodes
         int u = q.front(); q.pop();
-        // show node order
+        if (u == b){
+            dist = nodes[b].dist;
+            return dist;
+        }
+
         for (auto e : nodes[u].adj) {
-            cout <<endl << "Índice do node: "<<e.dest << "  Distancia (em paragens): " << i << "  Linha a usar: "<< e.line ;
             int w = e.dest;
-            if(w == b){
-                arrived = true;
-                break;
-            }
-
             if (!nodes[w].visited) {
-
+                //cout << e.line << " - " << nodes[w].stop << endl;
                 q.push(w);
                 nodes[w].visited = true;
+                nodes[w].dist = nodes[u].dist + 1.0;
             }
         }
-        if(arrived)
-            break;
-        i++;
     }
-    return i;
+
+/*    cout << "As paragens sao as seguintes: " ;
+    for (auto const& stop : stops){
+        if (stop.first == linha_a_usar ){
+            cout << stop.second << " - " ;
+        }
+    }*/
+    return dist;
 }
 
-void graph::dijkstra(int s, int r) {
+
+queue<string> graph::dijkstra(int s, int r) {
     MinHeap<int, int> q(n, -1);
     for (int v=1; v<=n; v++) {
         nodes[v].dist = INT_MAX/2;
@@ -59,21 +65,32 @@ void graph::dijkstra(int s, int r) {
     q.decreaseKey(s, 0);
     nodes[s].pred = s;
     bool arrived = false;
+    queue<string> usedLines;
+    queue<string> putas;
     while (q.getSize()>0 && !arrived) {
         int u = q.removeMin();
-        // cout << "Node " << u << " with dist = " << nodes[u].dist << endl;
+        cout << "PRED " << nodes[nodes[u].pred].stop << "(" << nodes[nodes[u].pred].code << ")" << endl;
+        cout << "STOP " << nodes[u].stop << "(" << nodes[u].code << ")" << " with dist = " << nodes[u].dist << endl;
         nodes[u].visited = true;
         for (auto e : nodes[u].adj) {
+            int i = 0;
             int v = e.dest;
-            int w = e.weight;
-            if (!nodes[v].visited && nodes[u].dist + w < nodes[v].dist) {
+            cout << v << endl;
+            double w = e.weight;
+            if (!nodes[v].visited && nodes[u].dist + w < nodes[v].dist ) {
+                nodes[v].line = e.line;
                 nodes[v].dist = nodes[u].dist + w;
                 q.decreaseKey(v, nodes[v].dist);
                 nodes[v].pred = u;
             }
+            if(!nodes[v].visited && nodes[u].dist + w == nodes[v].dist && nodes[u].line == e.line){
+                nodes[v].line = nodes[u].line;
+            }
+
             if(v == r) arrived = true;
         }
     }
+    return usedLines;
 }
 
 int graph::dijkstra_distance(int a, int b) {
@@ -82,15 +99,15 @@ int graph::dijkstra_distance(int a, int b) {
     return nodes[b].dist;
 }
 
-list<int> graph::dijkstra_path(int a, int b) {
-    dijkstra(a);
-    list<int> path;
+list<tuple<string,string,string>> graph::dijkstra_path(int a, int b) {
+    dijkstra(a,b);
+    list<tuple<string,string,string>> path;
     if (nodes[b].dist == INT_MAX / 2) return path;
-    path.push_back(b);
+    path.emplace_back(nodes[b].stop,nodes[b].code, nodes[b].line);
     int v = b;
     while (v != a) {
         v = nodes[v].pred;
-        path.push_front(v);
+        path.push_front(make_tuple(nodes[v].stop,nodes[v].code, nodes[v].line));
     }
     return path;
 }
