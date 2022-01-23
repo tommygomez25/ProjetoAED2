@@ -15,5 +15,5 @@ CMakeLists.txt
 docs/ProjetoAED.exe
 docs/Projeto_AED.exe
 TextFiles/Projeto_AED.exe
-.idea
+.idea/
 .gitignore
