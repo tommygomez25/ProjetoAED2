@@ -78,13 +78,12 @@ int main(){
     //cout << graph1.bfs(1347,557);
     //cout << graph1.bfs(1217,1125) << endl;
     //cout << graph1.bfs(1340,1067) << endl;
-    list<string> path = graph1.dijkstra_path(1359,1067);
-    //list<string> path = graph1.dijkstra_path(1359,1088);
+    /*list<string> path = graph1.dijkstra_path(1359,1067);
     for (auto it = path.begin(); it != path.end(); it++){
         cout << *it << endl;
-    }
+    }*/
     //cout << graph1.bfs(1340,1266) << endl;
-    cout << endl;
+    cout << graph1.bfs(1359,1067);
     //cout << graph1.bfs(2175,420) << endl;
     //cout << graph1.bfs(1359,1088) << endl; // no 603 sao 29 paragens , no 604 sao 14
     //cout << graph1.bfs(1087,1172) << endl;
