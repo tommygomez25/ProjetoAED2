@@ -92,6 +92,9 @@ queue<string> graph::dijkstra(int s, int r) {
         for (auto e : nodes[u].adj) {
             int i = 0;
             int v = e.dest;
+            if (nodes[u].line != e.line){
+                e.weight++;
+            }
             //cout << v << endl;
             double w = e.weight;
             if (!nodes[v].visited && nodes[u].dist + w < nodes[v].dist ) {

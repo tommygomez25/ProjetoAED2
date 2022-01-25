@@ -57,15 +57,7 @@ void createEdges(string direction, const vector<Stop> &stops, const map<string,i
     string line;
     for (unsigned int i = 0 ; i < lines.size() ; i++){
         ifstream file;
-        string lineCodeAnterior;
-        if (i>=1){
-            lineCodeAnterior = lines[i-1].code;
-        }
         string lineCode = lines[i].code;
-        double distance = 0.0;
-        if (lineCode != lineCodeAnterior){
-            distance = 1.0;
-        }
         file.open("line_" + lineCode + "_" + direction + ".csv");
         getline(file,line); // para ignorar a primeira linha
         vector<string> lineCodes; // todos os códigos dos STOPS dessa linha
@@ -77,10 +69,9 @@ void createEdges(string direction, const vector<Stop> &stops, const map<string,i
         if (lineCodes.size() == 0) continue;
 
         for (unsigned j = 0 ; j < lineCodes.size()-1; j++){
-
             int stopIndexParent = getIndexStops(lineCodes[j], stopsIndex);
             int stopIndexChild = getIndexStops(lineCodes[j + 1], stopsIndex);
-
+            double distance = 0.0;
             graph.addEdge(stopIndexParent,stopIndexChild,lineCode,distance);
         }
     }
