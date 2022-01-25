@@ -55,9 +55,17 @@ void addClosestStops(graph &graph, int v, double userDistance){
 void createEdges(string direction, const vector<Stop> &stops, const map<string,int> &stopsIndex, graph &graph){
     vector<Line> lines = readLinesTony();
     string line;
-    for (unsigned int i = 0 ; i < lines.size() ; i++){ // direção 0
+    for (unsigned int i = 0 ; i < lines.size() ; i++){
         ifstream file;
+        string lineCodeAnterior;
+        if (i>=1){
+            lineCodeAnterior = lines[i-1].code;
+        }
         string lineCode = lines[i].code;
+        double distance = 0.0;
+        if (lineCode != lineCodeAnterior){
+            distance = 1.0;
+        }
         file.open("line_" + lineCode + "_" + direction + ".csv");
         getline(file,line); // para ignorar a primeira linha
         vector<string> lineCodes; // todos os códigos dos STOPS dessa linha
@@ -69,13 +77,11 @@ void createEdges(string direction, const vector<Stop> &stops, const map<string,i
         if (lineCodes.size() == 0) continue;
 
         for (unsigned j = 0 ; j < lineCodes.size()-1; j++){
+
             int stopIndexParent = getIndexStops(lineCodes[j], stopsIndex);
             int stopIndexChild = getIndexStops(lineCodes[j + 1], stopsIndex);
-            double distance = 0;
 
-            if (stops[stopIndexParent-1].zone != stops[stopIndexChild-1].zone){
-                distance = 1.0;
-            }
+            graph.addEdge(stopIndexParent,stopIndexChild,lineCode,distance);
         }
     }
 }
@@ -103,7 +109,7 @@ int main(){
 
     //addClosestStops(graph1,1,0.1);
     //list<tuple<string,string,string>> path1 = graph1.dijkstra_path(2165,1661);
-
+    graph1.dijkstra(1340, 1067);
     list<tuple<string,string,string>> path = graph1.dijkstra_path(1340,1067);
     cout << graph1.nodes[1067].dist;
 

@@ -37,7 +37,7 @@ int graph::bfs(int v, int b) {
 
         for (auto e : nodes[u].adj) {
             int w = e.dest;
-            if (!nodes[w].visited   ) {
+            if (!nodes[w].visited) {
                 //cout << e.line << " - " << nodes[w].stop << endl;
                 q.push(w);
                 nodes[w].visited = true;
