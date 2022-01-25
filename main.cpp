@@ -71,12 +71,11 @@ void createEdges(string direction, const vector<Stop> &stops, const map<string,i
         for (unsigned j = 0 ; j < lineCodes.size()-1; j++){
             int stopIndexParent = getIndexStops(lineCodes[j], stopsIndex);
             int stopIndexChild = getIndexStops(lineCodes[j + 1], stopsIndex);
-            double distance = haversine(stops[stopIndexParent-1].latitude,
-                                        stops[stopIndexParent-1].longitude,
-                                        stops[stopIndexChild-1].latitude,
-                                        stops[stopIndexChild-1].longitude);
-            /*if(stops[stopIndexParent].name == "LUIS CAMÕES")
-                cout << endl <<stops[stopIndexParent-1].name << " - " << stops[stopIndexChild-1].name << "," << distance << endl;*/
+            double distance = 0;
+
+            if (stops[stopIndexParent-1].zone != stops[stopIndexChild-1].zone){
+                distance = 1.0;
+            }
             graph.addEdge(stopIndexParent,stopIndexChild,lineCode,distance);
         }
     }
@@ -103,7 +102,7 @@ int main(){
     createEdges("0",stops,stopsIndex,graph1);
     createEdges("1",stops,stopsIndex,graph1);
 
-    //addClosestStops(graph1,1,0.1);
+    addClosestStops(graph1,1,0.1);
     //list<tuple<string,string,string>> path1 = graph1.dijkstra_path(2165,1661);
 
     list<tuple<string,string,string>> path = graph1.dijkstra_path(1340,1067);
