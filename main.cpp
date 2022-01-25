@@ -31,14 +31,14 @@ void addClosestStops(graph &graph, int v, double userDistance){
             if(u == stop || found) continue;
 
             double distance = haversine(graph.nodes[u].latitude,graph.nodes[u].longitude,graph.nodes[stop].latitude,graph.nodes[stop].longitude);
-            if ( u == 1340){
+            /*if ( u == 1340){
                 cout << "distancia entre LUCM2 e " << stop << "= " << distance<< endl;
-            }
+            }*/
             if(distance <= userDistance) {
-                if (u == 1340){
-                    cout << u << " até " << stop << "com distancia " << distance << endl;
-                }
-                graph.addEdge(u,stop,"a pé",distance);
+                //if (u == 1340){
+                   // cout << u << " até " << stop << "com distancia " << distance << endl;
+                //}
+                graph.addEdge(u,stop,"a pé",1.0);
             }
         }
 
@@ -58,6 +58,7 @@ void createEdges(string direction, const vector<Stop> &stops, const map<string,i
     for (unsigned int i = 0 ; i < lines.size() ; i++){
         ifstream file;
         string lineCode = lines[i].code;
+        if (lineCode == "1M" || lineCode == "3M" || lineCode == "4M" || lineCode == "5M" || lineCode == "7M" || lineCode == "8M" || lineCode == "9M" || lineCode == "10M" || lineCode == "11M" || lineCode == "12M" || lineCode == "13M") continue;
         file.open("line_" + lineCode + "_" + direction + ".csv");
         getline(file,line); // para ignorar a primeira linha
         vector<string> lineCodes; // todos os códigos dos STOPS dessa linha
@@ -81,7 +82,6 @@ int main(){
     vector<Stop> stops = readStops();
     graph graph1(2487,true);
     string line;
-    int distanceBetweenStops;
 
     map<string,int> stopsIndex;
 
@@ -98,17 +98,17 @@ int main(){
     createEdges("0",stops,stopsIndex,graph1);
     createEdges("1",stops,stopsIndex,graph1);
 
-    //addClosestStops(graph1,1,0.1);
+    addClosestStops(graph1,1,0.1);
     //list<tuple<string,string,string>> path1 = graph1.dijkstra_path(2165,1661);
-    graph1.dijkstra(1340, 1067);
-    list<tuple<string,string,string>> path = graph1.dijkstra_path(1340,1067);
-    cout << graph1.nodes[1067].dist;
+    //graph1.dijkstra(1340, 1067);
+    list<tuple<string,string,string>> path1 = graph1.dijkstra_path(2175,662);
+    cout << graph1.nodes[662].dist;
 
     //list<tuple<string,string,string>> path = graph1.bfs_path(1340,1067);
 
     //list<tuple<string,string,string>> path = graph1.dijkstra_path(2177,913);
 
-    for(auto it = path.begin(); it != path.end(); it++){
+    for(auto it = path1.begin(); it != path1.end(); it++){
         cout << get<2>(*it)<< " - " <<get<0>(*it) << "(" << get<1>(*it) << ")" <<  " -> ";
     }
     //cout << haversine(graph1.nodes[1340].latitude, graph1.nodes[1340].longitude, graph1.nodes[1261].latitude, graph1.nodes[1261].longitude);

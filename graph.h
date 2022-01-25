@@ -34,7 +34,7 @@ public:
     bool hasDir;        // false: undirect; true: directed
     // The list of nodes being represented
 
-    queue<string> dijkstra(int s, int r);
+    void dijkstra(int s, int r);
 
 
     vector<Node> nodes;

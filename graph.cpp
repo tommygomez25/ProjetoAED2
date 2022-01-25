@@ -72,7 +72,7 @@ list<tuple<string,string,string>> graph::bfs_path(int a, int b) {
 }
 
 
-queue<string> graph::dijkstra(int s, int r) {
+void graph::dijkstra(int s, int r) {
     MinHeap<int, int> q(n, -1);
     for (int v=1; v<=n; v++) {
         nodes[v].dist = INT_MAX/2;
@@ -83,34 +83,33 @@ queue<string> graph::dijkstra(int s, int r) {
     q.decreaseKey(s, 0);
     nodes[s].pred = s;
     bool arrived = false;
-    queue<string> usedLines;
     while (q.getSize()>0 && !arrived) {
         int u = q.removeMin();
-        //cout << "PRED " << nodes[nodes[u].pred].stop << "(" << nodes[nodes[u].pred].code << ")" << endl;
-        // cout << "STOP " << nodes[u].stop << "(" << nodes[u].code << ")" << " with dist = " << nodes[u].dist << endl;
+        cout << "PRED " << nodes[nodes[u].pred].stop << "(" << nodes[nodes[u].pred].code << ")" << endl;
+        cout << "STOP " << nodes[u].stop << "(" << nodes[u].code << ")" << " with dist = " << nodes[u].dist << endl;
         nodes[u].visited = true;
         for (auto e : nodes[u].adj) {
-            int i = 0;
             int v = e.dest;
-            if (nodes[u].line != e.line){
-                e.weight++;
+            if (nodes[u].line != e.line && e.line != "a pé"){
+                e.weight =1;
             }
             //cout << v << endl;
             double w = e.weight;
             if (!nodes[v].visited && nodes[u].dist + w < nodes[v].dist ) {
+                if(nodes[u].line == "a pé" && e.line == "a pé") continue;
                 nodes[v].line = e.line;
                 nodes[v].dist = nodes[u].dist + w;
                 q.decreaseKey(v, nodes[v].dist);
                 nodes[v].pred = u;
             }
-            if(!nodes[v].visited && nodes[u].dist + w == nodes[v].dist && nodes[u].line == e.line){
+            if(!nodes[v].visited && nodes[u].dist + w == nodes[v].dist  && nodes[u].line == e.line){ //se a distancia for a mesma fica no mesmo autocarro
                 nodes[v].line = nodes[u].line;
             }
 
             if(v == r) arrived = true;
         }
     }
-    return usedLines;
+    return;
 }
 
 int graph::dijkstra_distance(int a, int b) {
