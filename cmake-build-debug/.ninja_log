@@ -1,11 +1,7 @@
 # ninja log v5
-5	1712	6647740080064996	CMakeFiles/ProjetoAED2.dir/main.cpp.obj	af4261ba34b77fbf
+6	2568	6647741087304530	CMakeFiles/ProjetoAED2.dir/main.cpp.obj	af4261ba34b77fbf
 533	671	6642927043450833	ProjetoAED2.exe	93f1fc8d6301e7dc
 5	1811	6645902156899615	CMakeFiles/ProjetoAED2.dir/Graph.cpp.obj	af50cf3507f1ab3b
-2	181	6646058145911366	build.ninja	13be9d2d5e605d97
-1714	2438	6647740087255848	../dataset/ProjetoAED2.exe	891a89adeac7ad42
-13	3458	6647728155976274	CMakeFiles/ProjetoAED2.dir/graph.cpp.obj	cfabbc74cfd27617
-5	1600	6647740795955589	CMakeFiles/ProjetoAED2.dir/main.cpp.obj	af4261ba34b77fbf
-1601	2203	6647740801917237	../dataset/ProjetoAED2.exe	891a89adeac7ad42
-6	2568	6647741087304530	CMakeFiles/ProjetoAED2.dir/main.cpp.obj	af4261ba34b77fbf
+2	181	6647746379876562	build.ninja	13be9d2d5e605d97
 2572	3161	6647741093241148	../dataset/ProjetoAED2.exe	891a89adeac7ad42
+13	3458	6647728155976274	CMakeFiles/ProjetoAED2.dir/graph.cpp.obj	cfabbc74cfd27617
