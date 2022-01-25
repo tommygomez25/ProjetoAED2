@@ -71,11 +71,7 @@ void createEdges(string direction, const vector<Stop> &stops, const map<string,i
         for (unsigned j = 0 ; j < lineCodes.size()-1; j++){
             int stopIndexParent = getIndexStops(lineCodes[j], stopsIndex);
             int stopIndexChild = getIndexStops(lineCodes[j + 1], stopsIndex);
-            double distance = 0;
-
-            if (stops[stopIndexParent-1].zone != stops[stopIndexChild-1].zone){
-                distance = 1.0;
-            }
+            double distance = haversine(stops[stopIndexParent-1].latitude, stops[stopIndexParent-1].longitude, stops[stopIndexChild-1].latitude, stops[stopIndexChild-1].longitude);
             graph.addEdge(stopIndexParent,stopIndexChild,lineCode,distance);
         }
     }
