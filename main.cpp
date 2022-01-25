@@ -11,8 +11,25 @@
 
 using namespace std;
 
+void printPath(list<tuple<string,string, string>> path){
+    for(auto it = path.begin(); it != path.end(); it++){
+        if(it == path.begin()){
+            cout << get<0>(*it) << "(" << get<1>(*it) << ")" <<  " -> ";
+        }
+        else{
+            cout << get<2>(*it)<< " -> " <<get<0>(*it) << "(" << get<1>(*it) << ")" <<  " -> ";
+        }
+    }
+}
+
+void clearEdges(graph &graph){
+    for(int i = 1; i <= graph.n; i++){
+        graph.nodes[i].adj.clear();
+    }
+}
+
 void addClosestStops(graph &graph, int v, double userDistance){
-    for (int v=1; v<=graph.n; v++) graph.nodes[v].visited = false;
+    for (int r=1; r<=graph.n; r++) graph.nodes[r].visited = false;
     queue<int> q; // queue of unvisited nodes
     q.push(v);
     graph.nodes[v]. visited = true;
@@ -52,13 +69,19 @@ void addClosestStops(graph &graph, int v, double userDistance){
     }
 }
 
-void createEdges(string direction, const vector<Stop> &stops, const map<string,int> &stopsIndex, graph &graph){
+void createEdgesForMinChanges(string direction, const vector<Stop> &stops, const map<string,int> &stopsIndex, graph &graph,int dayJourney){
     vector<Line> lines = readLinesTony();
     string line;
     for (unsigned int i = 0 ; i < lines.size() ; i++){
         ifstream file;
         string lineCode = lines[i].code;
-        if (lineCode == "1M" || lineCode == "3M" || lineCode == "4M" || lineCode == "5M" || lineCode == "7M" || lineCode == "8M" || lineCode == "9M" || lineCode == "10M" || lineCode == "11M" || lineCode == "12M" || lineCode == "13M") continue;
+        if (dayJourney == 0){
+            if (lineCode == "1M" || lineCode == "3M" || lineCode == "4M" || lineCode == "5M" || lineCode == "7M" || lineCode == "8M" || lineCode == "9M" || lineCode == "10M" || lineCode == "11M" || lineCode == "12M" || lineCode == "13M") continue;
+        }
+        else {
+            if (lineCode != "1M" && lineCode != "3M" && lineCode != "4M" && lineCode != "5M" && lineCode != "7M" && lineCode != "8M" && lineCode != "9M" && lineCode != "10M" && lineCode != "11M" && lineCode != "12M" && lineCode != "13M") continue;
+        }
+
         file.open("line_" + lineCode + "_" + direction + ".csv");
         getline(file,line); // para ignorar a primeira linha
         vector<string> lineCodes; // todos os códigos dos STOPS dessa linha
@@ -73,6 +96,72 @@ void createEdges(string direction, const vector<Stop> &stops, const map<string,i
             int stopIndexParent = getIndexStops(lineCodes[j], stopsIndex);
             int stopIndexChild = getIndexStops(lineCodes[j + 1], stopsIndex);
             double distance = 0.0;
+            graph.addEdge(stopIndexParent,stopIndexChild,lineCode,distance);
+        }
+    }
+}
+
+void createEdgesForMinDistance(string direction, const vector<Stop> &stops, const map<string,int> &stopsIndex, graph &graph,int dayJourney){
+    vector<Line> lines = readLinesTony();
+    string line;
+    for (unsigned int i = 0 ; i < lines.size() ; i++){ // direção 0
+        ifstream file;
+        string lineCode = lines[i].code;
+        if (dayJourney == 0){
+            if (lineCode == "1M" || lineCode == "3M" || lineCode == "4M" || lineCode == "5M" || lineCode == "7M" || lineCode == "8M" || lineCode == "9M" || lineCode == "10M" || lineCode == "11M" || lineCode == "12M" || lineCode == "13M") continue;
+        }
+        else {
+            if (lineCode != "1M" && lineCode != "3M" && lineCode != "4M" && lineCode != "5M" && lineCode != "7M" && lineCode != "8M" && lineCode != "9M" && lineCode != "10M" && lineCode != "11M" && lineCode != "12M" && lineCode != "13M") continue;
+        }
+        file.open("line_" + lineCode + "_" + direction + ".csv");
+        getline(file,line); // para ignorar a primeira linha
+        vector<string> lineCodes; // todos os códigos dos STOPS dessa linha
+
+        while (getline(file,line)){
+            lineCodes.push_back(line);
+        }
+
+        if (lineCodes.size() == 0) continue;
+
+        for (unsigned j = 0 ; j < lineCodes.size()-1; j++){
+            int stopIndexParent = getIndexStops(lineCodes[j], stopsIndex);
+            int stopIndexChild = getIndexStops(lineCodes[j + 1], stopsIndex);
+            double distance = haversine(stops[stopIndexParent-1].latitude, stops[stopIndexParent-1].longitude, stops[stopIndexChild-1].latitude, stops[stopIndexChild-1].longitude);
+            graph.addEdge(stopIndexParent,stopIndexChild,lineCode,distance);
+        }
+    }
+}
+
+void createEdgesForMinZone(string direction, const vector<Stop> &stops, const map<string,int> &stopsIndex, graph &graph,int dayJourney){
+    vector<Line> lines = readLinesTony();
+    string line;
+    for (unsigned int i = 0 ; i < lines.size() ; i++){ // direção 0
+        ifstream file;
+        string lineCode = lines[i].code;
+        if (dayJourney == 0){
+            if (lineCode == "1M" || lineCode == "3M" || lineCode == "4M" || lineCode == "5M" || lineCode == "7M" || lineCode == "8M" || lineCode == "9M" || lineCode == "10M" || lineCode == "11M" || lineCode == "12M" || lineCode == "13M") continue;
+        }
+        else {
+            if (lineCode != "1M" && lineCode != "3M" && lineCode != "4M" && lineCode != "5M" && lineCode != "7M" && lineCode != "8M" && lineCode != "9M" && lineCode != "10M" && lineCode != "11M" && lineCode != "12M" && lineCode != "13M") continue;
+        }
+        file.open("line_" + lineCode + "_" + direction + ".csv");
+        getline(file,line); // para ignorar a primeira linha
+        vector<string> lineCodes; // todos os códigos dos STOPS dessa linha
+
+        while (getline(file,line)){
+            lineCodes.push_back(line);
+        }
+
+        if (lineCodes.empty()) continue;
+
+        for (unsigned j = 0 ; j < lineCodes.size()-1; j++){
+            int stopIndexParent = getIndexStops(lineCodes[j], stopsIndex);
+            int stopIndexChild = getIndexStops(lineCodes[j + 1], stopsIndex);
+            double distance = 0;
+
+            if (stops[stopIndexParent-1].zone != stops[stopIndexChild-1].zone){
+                distance = 1.0;
+            }
             graph.addEdge(stopIndexParent,stopIndexChild,lineCode,distance);
         }
     }
@@ -95,24 +184,99 @@ int main(){
         stopsIndex.insert(make_pair(stops[i-1].code,i));
     }
 
+    int option;
+    float userDistance;
+    string dep, arrival;
+    int depIndex, arrivalIndex;
+    int dayJourneyInput;
+    int dayJourney;
+
+    cout << "Qual a paragem de partida? ";
+    cin >> dep;
+
+    cout << endl << "Qual a paragem de destino? ";
+    cin >> arrival;
+
+    depIndex = getIndexStops(dep, stopsIndex);
+    arrivalIndex = getIndexStops(arrival, stopsIndex);
+
+    cout << endl <<"Qual a distancia maxima entre paragens que esta disposto a andar a pe? (em kms) ";
+    cin >> userDistance;
+    cout << endl <<"E uma viagem diurna ou noturna? (0/1) "; cin >> dayJourney;
+
+    /*if(tolower(dayJourneyInput) == 'd') dayJourney= true;
+    else if (tolower(dayJourneyInput) == 'n') dayJourney = false;
+*/
+
+    cout << endl << "1 - Menor numero de paragens" << endl << "2 - Menor distancia" << endl << "3 - Menos mudancas de autocarro" << endl;
+    cout << "4 - Mais barato" << endl;
+
+    do {
+        clearEdges(graph1);
+        cin >> option;
+        list<tuple<string, string, string>> path;
+        switch (option) {
+            case 1:
+                cout << "lol" << endl;
+                createEdgesForMinChanges("0", stops, stopsIndex, graph1,dayJourney);
+                createEdgesForMinChanges("1", stops, stopsIndex, graph1,dayJourney);
+                if(userDistance > 0.0){
+                    addClosestStops(graph1,1,userDistance);
+                }
+                path = graph1.bfs_path(depIndex, arrivalIndex);
+                printPath(path);
+                break;
+            case 2:
+                createEdgesForMinDistance("0", stops, stopsIndex, graph1,dayJourney);
+                createEdgesForMinDistance("1", stops, stopsIndex, graph1,dayJourney);
+                if(userDistance > 0.0){
+                    addClosestStops(graph1,1,userDistance);
+                }
+                path = graph1.dijkstra_path_minDistance(depIndex,arrivalIndex);
+                printPath(path);
+                break;
+            case 3:
+                createEdgesForMinChanges("0", stops, stopsIndex, graph1, dayJourney);
+                createEdgesForMinChanges("1", stops, stopsIndex, graph1, dayJourney);
+                if(userDistance > 0.0){
+                    addClosestStops(graph1,1,userDistance);
+                }
+                path = graph1.dijkstra_path_minChanges(depIndex,arrivalIndex);
+                printPath(path);
+                break;
+            case 4:
+                createEdgesForMinZone("0", stops, stopsIndex, graph1,dayJourney);
+                createEdgesForMinZone("1", stops, stopsIndex, graph1,dayJourney);
+                if(userDistance > 0.0){
+                    addClosestStops(graph1,1,userDistance);
+                }
+                path = graph1.dijkstra_path_minZones(depIndex,arrivalIndex);
+                printPath(path);
+                break;
+        }
+    } while(option != 0);
+
+
+
+/*
     createEdges("0",stops,stopsIndex,graph1);
     createEdges("1",stops,stopsIndex,graph1);
 
-    addClosestStops(graph1,1,0.1);
-    //list<tuple<string,string,string>> path1 = graph1.dijkstra_path(2165,1661);
-    //graph1.dijkstra(1340, 1067);
+
+    list<tuple<string,string,string>> path1 = graph1.dijkstra_path(2165,1661);
+    graph1.dijkstra(1340, 1067);
     list<tuple<string,string,string>> path1 = graph1.dijkstra_path(2175,662);
     cout << graph1.nodes[662].dist;
 
-    //list<tuple<string,string,string>> path = graph1.bfs_path(1340,1067);
+    list<tuple<string,string,string>> path = graph1.bfs_path(1340,1067);
 
-    //list<tuple<string,string,string>> path = graph1.dijkstra_path(2177,913);
+    list<tuple<string,string,string>> path = graph1.dijkstra_path(2177,913);
 
     for(auto it = path1.begin(); it != path1.end(); it++){
         cout << get<2>(*it)<< " - " <<get<0>(*it) << "(" << get<1>(*it) << ")" <<  " -> ";
     }
-    //cout << haversine(graph1.nodes[1340].latitude, graph1.nodes[1340].longitude, graph1.nodes[1261].latitude, graph1.nodes[1261].longitude);
-
+    cout << haversine(graph1.nodes[1340].latitude, graph1.nodes[1340].longitude, graph1.nodes[1261].latitude, graph1.nodes[1261].longitude);
+*/
     return EXIT_SUCCESS;
 }
 

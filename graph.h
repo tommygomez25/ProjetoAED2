@@ -34,8 +34,9 @@ public:
     bool hasDir;        // false: undirect; true: directed
     // The list of nodes being represented
 
-    void dijkstra(int s, int r);
-
+    queue<string> dijkstraForMinZone(int s, int r);
+    void dijkstraForMinChanges(int s, int r);
+    queue<string> dijkstraForMinDistance(int s, int r);
 
     vector<Node> nodes;
     // Constructor: nr nodes and direction (default: undirected)
@@ -46,12 +47,15 @@ public:
 
     // ----- Functions to implement in this class -----
     int dijkstra_distance(int a, int b);
-    list<tuple<string,string,string>> dijkstra_path(int a, int b);
+
+    list<tuple<string,string,string>> dijkstra_path_minChanges(int a, int b);
+    list<tuple<string,string,string>> dijkstra_path_minZones(int a, int b);
+    list<tuple<string,string,string>> dijkstra_path_minDistance(int a, int b);
     vector<Node> getNodes(){return nodes;}
-    int bfs(int v, int b);
+
+    void bfs(int v, int b);
     list<tuple<string,string,string>> bfs_path(int a, int b);
 
-    void addCloseStops(int v,int userDistance);
 };
 
 

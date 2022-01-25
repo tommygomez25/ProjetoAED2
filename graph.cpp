@@ -16,10 +16,10 @@ void graph::addEdge(int src, int dest,string line, double weight) {
     if (!hasDir) nodes[dest].adj.push_back({src, weight, line});
 }
 
-int graph::bfs(int v, int b) {
+void graph::bfs(int v, int b) {
     //list<int> distances;
     int dist = -1;
-    string linha_a_usar;
+    //string linha_a_usar;
     multimap<string,string> stops;
     for (int v=1; v<=n; v++) {nodes[v].visited = false;
                               nodes[v].dist = 10000.0;}
@@ -35,7 +35,7 @@ int graph::bfs(int v, int b) {
             return dist;
         }*/
 
-        for (auto e : nodes[u].adj) {
+        for (const auto& e : nodes[u].adj) {
             int w = e.dest;
             if (!nodes[w].visited) {
                 //cout << e.line << " - " << nodes[w].stop << endl;
@@ -54,7 +54,7 @@ int graph::bfs(int v, int b) {
             cout << stop.second << " - " ;
         }
     }*/
-    return dist;
+    return;
 }
 
 list<tuple<string,string,string>> graph::bfs_path(int a, int b) {
@@ -72,7 +72,7 @@ list<tuple<string,string,string>> graph::bfs_path(int a, int b) {
 }
 
 
-void graph::dijkstra(int s, int r) {
+void graph::dijkstraForMinChanges(int s, int r) {
     MinHeap<int, int> q(n, -1);
     for (int v=1; v<=n; v++) {
         nodes[v].dist = INT_MAX/2;
@@ -112,14 +112,90 @@ void graph::dijkstra(int s, int r) {
     return;
 }
 
-int graph::dijkstra_distance(int a, int b) {
+queue<string> graph::dijkstraForMinZone(int s, int r) {
+    MinHeap<int, int> q(n, -1);
+    for (int v=1; v<=n; v++) {
+        nodes[v].dist = INT_MAX/2;
+        q.insert(v, INT_MAX/2);
+        nodes[v].visited = false;
+    }
+    nodes[s].dist = 0;
+    q.decreaseKey(s, 0);
+    nodes[s].pred = s;
+    bool arrived = false;
+    queue<string> usedLines;
+    while (q.getSize()>0 && !arrived) {
+        int u = q.removeMin();
+        //cout << "PRED " << nodes[nodes[u].pred].stop << "(" << nodes[nodes[u].pred].code << ")" << endl;
+        // cout << "STOP " << nodes[u].stop << "(" << nodes[u].code << ")" << " with dist = " << nodes[u].dist << endl;
+        nodes[u].visited = true;
+        for (auto e : nodes[u].adj) {
+            int i = 0;
+            int v = e.dest;
+            //cout << v << endl;
+            double w = e.weight;
+            if (!nodes[v].visited && nodes[u].dist + w < nodes[v].dist ) {
+                nodes[v].line = e.line;
+                nodes[v].dist = nodes[u].dist + w;
+                q.decreaseKey(v, nodes[v].dist);
+                nodes[v].pred = u;
+            }
+            if(!nodes[v].visited && nodes[u].dist + w == nodes[v].dist && nodes[u].line == e.line){
+                nodes[v].line = nodes[u].line;
+            }
+
+            if(v == r) arrived = true;
+        }
+    }
+    return usedLines;
+}
+
+queue<string> graph::dijkstraForMinDistance(int s, int r) {
+    MinHeap<int, int> q(n, -1);
+    for (int v=1; v<=n; v++) {
+        nodes[v].dist = INT_MAX/2;
+        q.insert(v, INT_MAX/2);
+        nodes[v].visited = false;
+    }
+    nodes[s].dist = 0;
+    q.decreaseKey(s, 0);
+    nodes[s].pred = s;
+    bool arrived = false;
+    queue<string> usedLines;
+    while (q.getSize()>0 && !arrived) {
+        int u = q.removeMin();
+        //cout << "PRED " << nodes[nodes[u].pred].stop << "(" << nodes[nodes[u].pred].code << ")" << endl;
+        // cout << "STOP " << nodes[u].stop << "(" << nodes[u].code << ")" << " with dist = " << nodes[u].dist << endl;
+        nodes[u].visited = true;
+        for (auto e : nodes[u].adj) {
+            int i = 0;
+            int v = e.dest;
+            //cout << v << endl;
+            double w = e.weight;
+            if (!nodes[v].visited && nodes[u].dist + w < nodes[v].dist ) {
+                nodes[v].line = e.line;
+                nodes[v].dist = nodes[u].dist + w;
+                q.decreaseKey(v, nodes[v].dist);
+                nodes[v].pred = u;
+            }
+            if(!nodes[v].visited && nodes[u].dist + w == nodes[v].dist && nodes[u].line == e.line){
+                nodes[v].line = nodes[u].line;
+            }
+
+            if(v == r) arrived = true;
+        }
+    }
+    return usedLines;
+}
+
+/*int graph::dijkstra_distance(int a, int b) {
     dijkstra(a,b);
     if (nodes[b].dist == INT_MAX/2) return -1;
     return nodes[b].dist;
-}
+}*/
 
-list<tuple<string,string,string>> graph::dijkstra_path(int a, int b) {
-    dijkstra(a,b);
+list<tuple<string,string,string>> graph::dijkstra_path_minChanges(int a, int b) {
+    dijkstraForMinChanges(a,b);
     list<tuple<string,string,string>> path;
     if (nodes[b].dist == INT_MAX / 2) return path;
     path.emplace_back(nodes[b].stop,nodes[b].code, nodes[b].line);
@@ -131,8 +207,28 @@ list<tuple<string,string,string>> graph::dijkstra_path(int a, int b) {
     return path;
 }
 
+list<tuple<string,string,string>> graph::dijkstra_path_minZones(int a, int b) {
+    dijkstraForMinZone(a,b);
+    list<tuple<string,string,string>> path;
+    if (nodes[b].dist == INT_MAX / 2) return path;
+    path.emplace_back(nodes[b].stop,nodes[b].code, nodes[b].line);
+    int v = b;
+    while (v != a) {
+        v = nodes[v].pred;
+        path.push_front(make_tuple(nodes[v].stop,nodes[v].code, nodes[v].line));
+    }
+    return path;
+}
 
-
-void graph::addCloseStops(int v, int userDistance) {
-
+list<tuple<string,string,string>> graph::dijkstra_path_minDistance(int a, int b) {
+    dijkstraForMinDistance(a,b);
+    list<tuple<string,string,string>> path;
+    if (nodes[b].dist == INT_MAX / 2) return path;
+    path.emplace_back(nodes[b].stop,nodes[b].code, nodes[b].line);
+    int v = b;
+    while (v != a) {
+        v = nodes[v].pred;
+        path.push_front(make_tuple(nodes[v].stop,nodes[v].code, nodes[v].line));
+    }
+    return path;
 }
