@@ -11,11 +11,82 @@
 
 using namespace std;
 
-int main(){
+void addClosestStops(graph &graph, int v, double userDistance){
+    for (int v=1; v<=graph.n; v++) graph.nodes[v].visited = false;
+    queue<int> q; // queue of unvisited nodes
+    q.push(v);
+    graph.nodes[v]. visited = true;
+    while (!q.empty()) { // while there are still unvisited nodes
+        int u = q.front(); q.pop();
+
+        //cout << u << " "; // show node order
+
+        auto adjacentStops = graph.nodes[u].adj;
+
+        for(unsigned int stop = 1; stop <= graph.n; stop++){
+            bool found = false;
+            for(auto adjacent: adjacentStops){ // para nao criar edges repetidas
+                if(adjacent.dest == stop) found = true;
+            }
+            if(u == stop || found) continue;
+
+            double distance = haversine(graph.nodes[u].latitude,graph.nodes[u].longitude,graph.nodes[stop].latitude,graph.nodes[stop].longitude);
+            if ( u == 1340){
+                cout << "distancia entre LUCM2 e " << stop << "= " << distance<< endl;
+            }
+            if(distance <= userDistance) {
+                if (u == 1340){
+                    cout << u << " até " << stop << "com distancia " << distance << endl;
+                }
+                graph.addEdge(u,stop,"a pé",distance);
+            }
+        }
+
+        for (auto e : graph.nodes[u].adj) {
+            int w = e.dest;
+            if (!graph.nodes[w].visited) {
+                q.push(w);
+                graph.nodes[w].visited = true;
+            }
+        }
+    }
+}
+
+void createEdges(string direction, const vector<Stop> &stops, const map<string,int> &stopsIndex, graph &graph){
     vector<Line> lines = readLinesTony();
+    string line;
+    for (unsigned int i = 0 ; i < lines.size() ; i++){ // direção 0
+        ifstream file;
+        string lineCode = lines[i].code;
+        file.open("line_" + lineCode + "_" + direction + ".csv");
+        getline(file,line); // para ignorar a primeira linha
+        vector<string> lineCodes; // todos os códigos dos STOPS dessa linha
+
+        while (getline(file,line)){
+            lineCodes.push_back(line);
+        }
+
+        if (lineCodes.size() == 0) continue;
+
+        for (unsigned j = 0 ; j < lineCodes.size()-1; j++){
+            int stopIndexParent = getIndexStops(lineCodes[j], stopsIndex);
+            int stopIndexChild = getIndexStops(lineCodes[j + 1], stopsIndex);
+            double distance = haversine(stops[stopIndexParent-1].latitude,
+                                        stops[stopIndexParent-1].longitude,
+                                        stops[stopIndexChild-1].latitude,
+                                        stops[stopIndexChild-1].longitude);
+            /*if(stops[stopIndexParent].name == "LUIS CAMÕES")
+                cout << endl <<stops[stopIndexParent-1].name << " - " << stops[stopIndexChild-1].name << "," << distance << endl;*/
+            graph.addEdge(stopIndexParent,stopIndexChild,lineCode,distance);
+        }
+    }
+}
+
+int main(){
     vector<Stop> stops = readStops();
     graph graph1(2487,true);
     string line;
+    int distanceBetweenStops;
 
     map<string,int> stopsIndex;
 
@@ -29,68 +100,22 @@ int main(){
         stopsIndex.insert(make_pair(stops[i-1].code,i));
     }
 
+    createEdges("0",stops,stopsIndex,graph1);
+    createEdges("1",stops,stopsIndex,graph1);
 
-    for (unsigned int i = 0 ; i < lines.size() ; i++){ // direção 0
-        ifstream file;
-        string lineCode = lines[i].code;
-        file.open("line_" + lineCode + "_" + "0.csv");
-        getline(file,line); // para ignorar a primeira linha
-        vector<string> lineCodes; // todos os códigos dos STOPS dessa linha
+    //addClosestStops(graph1,1,0.1);
+    //list<tuple<string,string,string>> path1 = graph1.dijkstra_path(2165,1661);
 
-        while (getline(file,line)){
-            lineCodes.push_back(line);
-        }
+    list<tuple<string,string,string>> path = graph1.dijkstra_path(1340,1067);
+    cout << graph1.nodes[1067].dist;
 
-        for (unsigned j = 0 ; j < lineCodes.size()-1; j++){
-            int stopIndexParent = getIndexStops(lineCodes[j], stopsIndex);
-            int stopIndexChild = getIndexStops(lineCodes[j + 1], stopsIndex);
-            double distance = haversine(stops[stopIndexParent-1].latitude,
-                                        stops[stopIndexParent-1].longitude,
-                                        stops[stopIndexChild-1].latitude,
-                                        stops[stopIndexChild-1].longitude);
-            if(stops[stopIndexParent].name == "LUIS CAMÕES")
-                cout << endl <<stops[stopIndexParent-1].name << " - " << stops[stopIndexChild-1].name << "," << distance << endl;
-            graph1.addEdge(stopIndexParent,stopIndexChild,lineCode,distance);
-        }
-    }
-
-    for (unsigned int i = 0 ; i < lines.size() ; i++){ // direção 1
-        ifstream file;
-        string lineCode = lines[i].code;
-        file.open("line_" + lineCode + "_" + "1.csv");
-        getline(file,line); // para ignorar a primeira linha
-        vector<string> lineCodes; // todos os códigos dos STOPS dessa linha
-
-
-        while (getline(file,line)){
-            lineCodes.push_back(line);
-        }
-        if (lineCodes.size() == 0) continue; // há linhas que não têm direção 1
-
-        for (unsigned j = 0 ; j < lineCodes.size()-1; j++){
-            int stopIndexParent = getIndexStops(lineCodes[j], stopsIndex);
-            int stopIndexChild = getIndexStops(lineCodes[j + 1], stopsIndex);
-            double distance = haversine(stops[stopIndexParent-1].latitude,
-                                        stops[stopIndexParent-1].longitude,
-                                        stops[stopIndexChild-1].latitude,
-                                        stops[stopIndexChild-1].longitude);
-
-            if(stops[stopIndexParent-1].name == "LUIS CAMÕES"){
-                cout << stopIndexParent<< " - " << stopIndexChild;
-                cout << endl <<stops[stopIndexParent-1].name << " - " << stops[stopIndexChild-1].name << "," << distance << endl;
-            }
-            graph1.addEdge(stopIndexParent,stopIndexChild,lineCode,distance);
-        }
-    }
-
-//    list<tuple<string,string,string>> path = graph1.dijkstra_path(1340,1067);
-    cout << graph1.bfs(1340,1067);
+    //list<tuple<string,string,string>> path = graph1.bfs_path(1340,1067);
 
     //list<tuple<string,string,string>> path = graph1.dijkstra_path(2177,913);
 
-/*    for(auto it = path.begin(); it != path.end(); it++){
+    for(auto it = path.begin(); it != path.end(); it++){
         cout << get<2>(*it)<< " - " <<get<0>(*it) << "(" << get<1>(*it) << ")" <<  " -> ";
-    }*/
+    }
     //cout << haversine(graph1.nodes[1340].latitude, graph1.nodes[1340].longitude, graph1.nodes[1261].latitude, graph1.nodes[1261].longitude);
 
     return EXIT_SUCCESS;

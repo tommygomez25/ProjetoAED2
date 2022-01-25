@@ -49,6 +49,9 @@ public:
     list<tuple<string,string,string>> dijkstra_path(int a, int b);
     vector<Node> getNodes(){return nodes;}
     int bfs(int v, int b);
+    list<tuple<string,string,string>> bfs_path(int a, int b);
+
+    void addCloseStops(int v,int userDistance);
 };
 
 

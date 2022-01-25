@@ -69,13 +69,13 @@ Stop closestStop(double lat, double lon,const vector<Stop> &stops){
     double min = INT_MAX;
     Stop stop1("","","",0,0);
     for (auto stop : stops){
-        if (haversine(lat,lon,stop.latitude,stop.longitude) < min){
+        double distance = haversine(lat,lon,stop.latitude,stop.longitude);
+        if (distance < min){
             min = haversine(lat,lon,stop.latitude,stop.longitude);
             stop1 = stop;
         }
     }
     return stop1;
 }
-
 
 #endif //PROJETOAED2_STOPSANDLINES_H
