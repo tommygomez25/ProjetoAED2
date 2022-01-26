@@ -85,8 +85,8 @@ void graph::dijkstraForMinChanges(int s, int r) {
     bool arrived = false;
     while (q.getSize()>0 && !arrived) {
         int u = q.removeMin();
-        cout << "PRED " << nodes[nodes[u].pred].stop << "(" << nodes[nodes[u].pred].code << ")" << endl;
-        cout << "STOP " << nodes[u].stop << "(" << nodes[u].code << ")" << " with dist = " << nodes[u].dist << endl;
+        //cout << "PRED " << nodes[nodes[u].pred].stop << "(" << nodes[nodes[u].pred].code << ")" << endl;
+        //cout << "STOP " << nodes[u].stop << "(" << nodes[u].code << ")" << " with dist = " << nodes[u].dist << endl;
         nodes[u].visited = true;
         for (auto e : nodes[u].adj) {
             int v = e.dest;
@@ -96,7 +96,7 @@ void graph::dijkstraForMinChanges(int s, int r) {
             //cout << v << endl;
             double w = e.weight;
             if (!nodes[v].visited && nodes[u].dist + w < nodes[v].dist ) {
-                if(nodes[u].line == "a pé" && e.line == "a pé") continue;
+                //if(nodes[u].line == "a pé" && e.line == "a pé" && ) continue;
                 nodes[v].line = e.line;
                 nodes[v].dist = nodes[u].dist + w;
                 q.decreaseKey(v, nodes[v].dist);

@@ -16,8 +16,11 @@ void printPath(list<tuple<string,string, string>> path){
         if(it == path.begin()){
             cout << get<0>(*it) << "(" << get<1>(*it) << ")" <<  " -> ";
         }
+        else if((*it) == path.back()){
+            cout << get<2>(*it)<< " - "<<get<0>(*it) << "(" << get<1>(*it) << ")";
+        }
         else{
-            cout << get<2>(*it)<< " -> " <<get<0>(*it) << "(" << get<1>(*it) << ")" <<  " -> ";
+            cout << get<2>(*it)<< " - " <<get<0>(*it) << "(" << get<1>(*it) << ")" <<  " -> ";
         }
     }
 }
@@ -159,12 +162,61 @@ void createEdgesForMinZone(string direction, const vector<Stop> &stops, const ma
             int stopIndexChild = getIndexStops(lineCodes[j + 1], stopsIndex);
             double distance = 0;
 
-            if (stops[stopIndexParent-1].zone != stops[stopIndexChild-1].zone){
+            if (stops[stopIndexParent-1].zone != stops[stopIndexChild-1].zone && stops[stopIndexParent-1].zone != ""){
                 distance = 1.0;
             }
             graph.addEdge(stopIndexParent,stopIndexChild,lineCode,distance);
         }
     }
+}
+
+void getLocalStop(double localLatitude, double localLongitude, graph &graph1, map<string,int> &stopsIndex, bool origin){
+    graph1.n += 1;
+    if(origin){
+        graph::Node node = {list<graph::Edge>()  , // The list of outgoing edges (to adjacent nodes)
+                            0,
+                            0,
+                            false,
+                            "Origin", // The name of the stop
+                            "O0",
+                            " ",
+                            localLatitude,
+                            localLongitude,
+                            ""};
+        graph1.nodes.push_back(node);
+        stopsIndex.insert(make_pair("O0",graph1.n));
+    }
+    else{
+        graph::Node node = {list<graph::Edge>()  , // The list of outgoing edges (to adjacent nodes)
+                            0,
+                            0,
+                            false,
+                            "Destination", // The name of the stop
+                            "D0",
+                            " ",
+                            localLatitude,
+                            localLongitude,
+                            ""};
+        graph1.nodes.push_back(node);
+        stopsIndex.insert(make_pair("D0",graph1.n));
+    }
+    /*graph1.nodes.push_back(s1);
+    graph1.nodes[graph1.n].latitude = localLatitude;
+    graph1.nodes[graph1.n].longitude = localLongitude;
+    //cout <<"->" <<graph1.nodes[graph1.n].zone  <<"<-"<< endl;
+    graph1.nodes[graph1.n].zone = "Location";
+    if(origin){
+        graph1.nodes[graph1.n].code = "O0";
+        graph1.nodes[graph1.n].stop = "Local de Origem";
+        stopsIndex.insert(make_pair("O0",graph1.n));
+    }
+    else{
+        graph1.nodes[graph1.n].code = "D0";
+        graph1.nodes[graph1.n].stop = "Local de Destino";
+        stopsIndex.insert(make_pair("D0",graph1.n));
+    }*/
+
+
 }
 
 int main(){
@@ -190,28 +242,57 @@ int main(){
     int depIndex, arrivalIndex;
     int dayJourneyInput;
     int dayJourney;
+    double depLatitude, depLongitude, destLatitude, destLongitude;
+    do{
+        cout << endl << "Deseja inserir coordenadas de origem ou paragem? (c/p)" << endl;
+        char decision;
+        cin >> decision;
+        if(decision == 'p'){
+            cout << endl << "Qual a paragem de partida? ";
+            cin >> dep;}
+        if(decision == 'c'){
+            cout << endl << "Qual a latitude de partida? ";
+            cin >> depLatitude;
+            cout << endl << "Qual a longitude de partida? ";
+            cin >> depLongitude;
+            getLocalStop(depLatitude, depLongitude, graph1,stopsIndex, true);
+            dep = "O0";
+        }
 
-    cout << "Qual a paragem de partida? ";
-    cin >> dep;
+        cout << endl << "Deseja inserir coordenadas de destino ou paragem? (c/p)" << endl;
+        char decision2;
+        cin >> decision2;
+        if(decision2 == 'p'){
+            cout << endl << "Qual a paragem de destino? ";
+            cin >> arrival;}
+        if(decision2 == 'c'){
+            cout << endl << "Qual a latitude de destino? ";
+            cin >> destLatitude;
+            cout << endl << "Qual a longitude de destino? ";
+            cin >> destLongitude;
+            getLocalStop(destLatitude, destLongitude,graph1, stopsIndex, false);
+            arrival = "D0";
+        }
 
-    cout << endl << "Qual a paragem de destino? ";
-    cin >> arrival;
 
-    depIndex = getIndexStops(dep, stopsIndex);
-    arrivalIndex = getIndexStops(arrival, stopsIndex);
 
-    cout << endl <<"Qual a distancia maxima entre paragens que esta disposto a andar a pe? (em kms) ";
-    cin >> userDistance;
-    cout << endl <<"E uma viagem diurna ou noturna? (0/1) "; cin >> dayJourney;
 
-    /*if(tolower(dayJourneyInput) == 'd') dayJourney= true;
-    else if (tolower(dayJourneyInput) == 'n') dayJourney = false;
-*/
+        depIndex = getIndexStops(dep, stopsIndex);
+        arrivalIndex = getIndexStops(arrival, stopsIndex);
 
-    cout << endl << "1 - Menor numero de paragens" << endl << "2 - Menor distancia" << endl << "3 - Menos mudancas de autocarro" << endl;
-    cout << "4 - Mais barato" << endl;
+        cout << endl <<"Qual a distancia maxima entre paragens que esta disposto a andar a pe? (em kms) ";
+        cin >> userDistance;
+        cout << endl <<"E uma viagem diurna ou noturna? (0/1) "; cin >> dayJourney;
 
-    do {
+        /*if(tolower(dayJourneyInput) == 'd') dayJourney= true;
+        else if (tolower(dayJourneyInput) == 'n') dayJourney = false;
+    */
+
+        cout << endl << "1 - Menor numero de paragens" << endl << "2 - Menor distancia" << endl << "3 - Menos mudancas de autocarro" << endl;
+        cout << "4 - Mais barato" << endl;
+
+        cout << endl << "Escolha uma opcao: ";
+
         clearEdges(graph1);
         cin >> option;
         list<tuple<string, string, string>> path;
@@ -254,6 +335,9 @@ int main(){
                 printPath(path);
                 break;
         }
+        cout << endl;
+        cout << "------";
+        cout << endl;
     } while(option != 0);
 
 

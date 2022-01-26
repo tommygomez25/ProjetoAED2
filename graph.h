@@ -25,8 +25,8 @@ public:
         string stop; // The name of the stop
         string code;
         string zone;
-        float latitude;
-        float longitude;
+        double latitude;
+        double longitude;
         string line;
     };
 
