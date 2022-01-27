@@ -96,7 +96,7 @@ void graph::dijkstraForMinChanges(int s, int r) {
             //cout << v << endl;
             double w = e.weight;
             if (!nodes[v].visited && nodes[u].dist + w < nodes[v].dist ) {
-                //if(nodes[u].line == "a pé" && e.line == "a pé" && ) continue;
+                if(nodes[u].line == "a pé" && e.line == "a pé" ) continue;
                 nodes[v].line = e.line;
                 nodes[v].dist = nodes[u].dist + w;
                 q.decreaseKey(v, nodes[v].dist);

@@ -1,9 +1,7 @@
-//
-// Created by maysa on 22/01/2022.
-//
-
 #ifndef PROJETOAED2_STOPSANDLINES_H
 #define PROJETOAED2_STOPSANDLINES_H
+
+#include <cmath>
 
 struct Line{
     string code;
@@ -62,20 +60,6 @@ int getIndexStops(string stop, map<string,int> stops){
             return s.second;
     }
     return -1;
-}
-
-//find closest stop to a location
-Stop closestStop(double lat, double lon,const vector<Stop> &stops){
-    double min = INT_MAX;
-    Stop stop1("","","",0,0);
-    for (auto stop : stops){
-        double distance = haversine(lat,lon,stop.latitude,stop.longitude);
-        if (distance < min){
-            min = haversine(lat,lon,stop.latitude,stop.longitude);
-            stop1 = stop;
-        }
-    }
-    return stop1;
 }
 
 #endif //PROJETOAED2_STOPSANDLINES_H

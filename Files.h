@@ -21,7 +21,7 @@ vector<Stop> readStops(){
         while(getline(str, value, ',')){
             aux.push_back(value);
         }
-        stops.push_back(Stop(aux[0],aux[1],aux[2],stod(aux[3]),stod(aux[4])));
+        stops.emplace_back(aux[0],aux[1],aux[2],stod(aux[3]),stod(aux[4]));
         aux.clear();
     }
 
@@ -29,7 +29,7 @@ vector<Stop> readStops(){
 
 }
 
-vector<Line> readLinesTony() {
+vector<Line> readLines() {
     {
         vector<Line> lines;
         vector<string> row;
@@ -47,8 +47,8 @@ vector<Line> readLinesTony() {
             content.push_back(row);
         }
 
-        for (unsigned int i =0 ; i < content.size();i++){
-            lines.push_back(Line(content[i][0],content[i][1]));
+        for (auto & i : content){
+            lines.emplace_back(i[0],i[1]);
         }
 
         return lines;
